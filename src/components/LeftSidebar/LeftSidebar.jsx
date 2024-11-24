@@ -13,7 +13,7 @@ const LeftSidebar = () => {
                     <div className="sub-menu">
                         <p>Edit Profile</p>
                         <hr />
-                        <p>Logout</p>
+                        <p>Logout</p> 
                     </div>
                 </div>
             </div>
