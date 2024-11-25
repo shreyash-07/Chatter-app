@@ -31,7 +31,7 @@ const signup = async(username, email, password)=>{
             lastSeen: Date.now()
         })
         await setDoc(doc(db, "chats",user.uid),{
-            chatData:[]
+            chatsData:[]
         })
     } catch(error){
         console.log(error)
@@ -42,7 +42,7 @@ const signup = async(username, email, password)=>{
 const login = async (email,password)=>{
     try{
         const userCredential=await signInWithEmailAndPassword(auth,email,password);
-        console.log("Login successful:", userCredential.user);
+        console.log("Login successful ");
         toast.success("Login successful!");
     } catch (error) {
         console.error("Login failed:", error.message);
