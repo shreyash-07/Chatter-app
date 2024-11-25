@@ -2,15 +2,32 @@ import React, { useContext, useState } from "react";
 import "./LeftSidebar.css";
 import assets from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { arrayUnion, collection, doc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
 
 const LeftSidebar = () => {
-
   const navigate = useNavigate();
-  const { userData,chatData,chatUser,setChatUser,messagesId,setMessagesId  } = useContext(AppContext);
+  const {
+    userData,
+    chatData,
+    chatUser,
+    setChatUser,
+    messagesId,
+    setMessagesId,
+  } = useContext(AppContext);
   const [user, setUser] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -23,66 +40,77 @@ const LeftSidebar = () => {
         const q = query(userRef, where("username", "==", input.toLowerCase()));
         const querySnap = await getDocs(q);
         if (!querySnap.empty && querySnap.docs[0].data().id !== userData.id) {
-            let userExist = false
-            chatData.map((user)=>{
-                if(user.rId === querySnap.docs[0].data().id){
-                    userExist= true;
-                }
-            })
-            if(!userExist){
-                setUser(querySnap.docs[0].data());
-            } 
-          
+          let userExist = false;
+          chatData.map((user) => {
+            if (user.rId === querySnap.docs[0].data().id) {
+              userExist = true;
+            }
+          });
+          if (!userExist) {
+            setUser(querySnap.docs[0].data());
+          }
+        } else {
+          setUser(null);
         }
-        else{
-            setUser(null);
-        }
-      }
-      else{
+      } else {
         setShowSearch(false);
       }
     } catch (error) {}
   };
 
-  const addChat = async ()=>{
+  const addChat = async () => {
     const messagesRef = collection(db, "messages");
     const chatsRef = collection(db, "chats");
     try {
-        const newMessagesRef = doc(messagesRef);
-        await setDoc(newMessagesRef, {
-            createAt: serverTimestamp(),
-            messages: []
-        })
+      const newMessagesRef = doc(messagesRef);
+      await setDoc(newMessagesRef, {
+        createAt: serverTimestamp(),
+        messages: [],
+      });
 
-        await updateDoc(doc(chatsRef, user.id),{
-            chatsData: arrayUnion({
-                messageId: newMessagesRef.id,
-                lastMessage:"",
-                rId: userData.id,
-                updateAt: Date.now(),
-                messageSeen: true
-            })
-        })
+      await updateDoc(doc(chatsRef, user.id), {
+        chatsData: arrayUnion({
+          messageId: newMessagesRef.id,
+          lastMessage: "",
+          rId: userData.id,
+          updateAt: Date.now(),
+          messageSeen: true,
+        }),
+      });
 
-        await updateDoc(doc(chatsRef, userData.id),{
-            chatsData: arrayUnion({
-                messageId: newMessagesRef.id,
-                lastMessage:"",
-                rId: user.id,
-                updateAt: Date.now(),
-                messageSeen: true
-            })
-        })
+      await updateDoc(doc(chatsRef, userData.id), {
+        chatsData: arrayUnion({
+          messageId: newMessagesRef.id,
+          lastMessage: "",
+          rId: user.id,
+          updateAt: Date.now(),
+          messageSeen: true,
+        }),
+      });
     } catch (error) {
-        toast.error(error.message);
-        console.log(error); 
+      toast.error(error.message);
+      console.log(error);
     }
-  }
+  };
 
-  const setChat = async (item) =>{
-    setMessagesId(item.messageId);
-    setChatUser(item);
-  }
+  const setChat = async (item) => {
+    try {
+      setMessagesId(item.messageId);
+      setChatUser(item);
+      const userChatsRef = doc(db, "chats", userData.id);
+      const userChatsSnapshot = await getDoc(userChatsRef);
+      const userChatsData = userChatsSnapshot.data();
+      const chatIndex = userChatsData.chatsData.findIndex(
+        (c) => c.messageId === item.messageId
+      );
+      userChatsData.chatsData[chatIndex].messageSeen = true;
+      await updateDoc(userChatsRef, {
+        chatsData: userChatsData.chatsData,
+      });
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="ls">
@@ -114,21 +142,30 @@ const LeftSidebar = () => {
         </div>
       </div>
       <div className="ls-list">
-        {showSearch && user
-         ? <div onClick={addChat} className="friends add-user">
+        {showSearch && user ? (
+          <div onClick={addChat} className="friends add-user">
             <img src={user.avatar} alt="" />
             <p>{user.name}</p>
-        </div>
-        : chatData.map((item, index) => (
-          <div onClick={()=>setChat(item)} key={index} className="friends">
-            <img src={item.userData.avatar} alt="" />
-            <div>
-              <p>{item.userData.name}</p>
-              <span>{item.lastMessage}</span>
-            </div>
           </div>
-        ))
-        } 
+        ) : (
+          chatData.map((item, index) => (
+            <div
+              onClick={() => setChat(item)}
+              key={index}
+              className={`friends ${
+                item.messageSeen || item.messageId === messagesId
+                  ? ""
+                  : "border"
+              }`}
+            >
+              <img src={item.userData.avatar} alt="" />
+              <div>
+                <p>{item.userData.name}</p>
+                <span>{item.lastMessage}</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

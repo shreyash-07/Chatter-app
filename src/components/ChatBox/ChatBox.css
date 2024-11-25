@@ -114,3 +114,33 @@
     font-weight: 500;
     color: #383838;
 }
+/* Style for the remove button */
+.image-preview .close-preview {
+    position: absolute; /* Position it at the top-right corner of the preview container */
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
+    border-radius: 50%; /* Make it circular */
+    padding: 5px;
+    color: white; /* Text (X) color */
+    font-size: 18px; /* Font size for the X */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+/* On hover, change the background color slightly */
+.image-preview .close-preview:hover {
+    background-color: rgba(0, 0, 0, 0.5); /* Darker background on hover */
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+/* For a better look, make sure the image preview container has proper alignment */
+.image-preview {
+    position: relative; /* Position the close button inside */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
