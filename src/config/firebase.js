@@ -4,12 +4,12 @@ import { collection, doc, getDocs, getFirestore, query, setDoc, where } from "fi
 import { toast } from "react-toastify";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBF-rvTgdov3xbUdG5Z5mOYgIIGuh1Yk-M",
-  authDomain: "chatter-app-4d160.firebaseapp.com",
-  projectId: "chatter-app-4d160",
-  storageBucket: "chatter-app-4d160.firebasestorage.app",
-  messagingSenderId: "823190420917",
-  appId: "1:823190420917:web:bb5580877f320c83f32dfc"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
