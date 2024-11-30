@@ -5,7 +5,6 @@ import { signup, login, resetPass } from '../../config/firebase'
 
 const Login = () => {
 
-  // To add functionality to click here button
   const [currState,setCurrState] =useState("Sign Up");
   const [userName,setUserName] = useState("");
   const [email,setEmail] = useState("");
