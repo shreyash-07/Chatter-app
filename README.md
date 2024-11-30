@@ -22,7 +22,6 @@
 - **Firebase**:
   - **Authentication**: Handles secure user login and signup.
   - **Firestore Database**: Real-time database for storing messages.
-  - **Hosting**: Deploy the application for public access.
 
 ---
 
